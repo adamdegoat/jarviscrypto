@@ -1,0 +1,140 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jarvis Crypto · live crypto dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#070b16;--ink:#e8eef7;--muted:#8a99b5;--dim:#5d6b86;--line:rgba(148,163,184,.13);--card:rgba(22,32,53,.55);--card2:rgba(15,23,42,.5)}
+body{margin:0;background:#070b16;color:var(--ink);font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(900px 500px at 18% -8%,rgba(56,189,248,.10),transparent 60%),radial-gradient(820px 480px at 88% 4%,rgba(168,85,247,.12),transparent 62%),linear-gradient(rgba(148,163,184,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,184,.035) 1px,transparent 1px);
+  background-size:auto,auto,44px 44px,44px 44px;background-attachment:fixed}
+.mono,.mono *,.tbl td.r,.tbl td.mono,.cd{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1080px;margin:0 auto;padding:30px 18px 72px}
+.title-row{display:flex;align-items:center;flex-wrap:wrap;gap:11px;margin:0 0 6px}
+.title{font-size:30px;font-weight:700;color:#fff;font-family:'Space Grotesk','Inter',system-ui,sans-serif;letter-spacing:-0.7px;margin:0;line-height:1}
+.title-sub{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.2px}
+.title-dot{font-size:12px;color:var(--dim)}
+.brandmark{flex:none;border-radius:7px;box-shadow:0 0 0 1px rgba(148,163,184,.18),0 6px 18px rgba(0,0,0,.5)}
+.tagline{color:var(--muted);font-size:13px;margin-top:4px}
+.glass{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:14px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.card{padding:17px 19px;margin:14px 0;box-shadow:0 10px 34px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.04)}
+.card-h{font-size:11px;letter-spacing:2.4px;color:var(--muted);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:600}
+.card-h-spacer{flex:1 1 auto}
+.scanbar{margin:18px 0 8px;padding:15px 19px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;position:relative;overflow:hidden}
+.scanbar:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(34,197,94,.07),transparent 38%);pointer-events:none}
+.scan-left{display:flex;align-items:center;gap:10px;font-size:14px;position:relative}
+.scan-right{margin-left:auto;font-size:13px;color:var(--muted)}
+.scan-slots{flex-basis:100%;font-size:11px;letter-spacing:1.6px;color:var(--dim)}
+.dot{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.7);animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}70%{box-shadow:0 0 0 11px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.live{color:#22c55e;font-weight:800;letter-spacing:2.4px;font-size:13px;text-shadow:0 0 12px rgba(34,197,94,.5)}
+.sep{color:var(--dim)}
+.ago{color:var(--dim);font-size:12px}
+.cd{color:#a855f7}
+.clocks{flex-basis:100%;font-size:12px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap;font-family:'IBM Plex Mono',ui-monospace,monospace}
+.chip{border:1px solid;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;letter-spacing:1px}
+.rbar{display:inline-flex;gap:4px;align-items:center}
+.rseg{font-size:9.5px;font-weight:800;letter-spacing:1.2px;padding:3px 9px;border-radius:6px;color:var(--dim);background:rgba(148,163,184,.07);border:1px solid var(--line)}
+.grid{display:grid;gap:12px}
+.stats{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
+.sub-stats{grid-template-columns:repeat(auto-fit,minmax(122px,1fr))}
+.stat{background:rgba(148,163,184,.05);border:1px solid var(--line);border-radius:11px;padding:13px 15px;min-width:0;position:relative;overflow:hidden}
+.stat.big{background:linear-gradient(160deg,rgba(56,189,248,.07),rgba(168,85,247,.05));border:1px solid rgba(148,163,184,.18)}
+.stat-l{font-size:10px;letter-spacing:1.6px;color:var(--muted);text-transform:uppercase;font-weight:600}
+.stat-v{font-size:21px;font-weight:700;margin-top:6px;color:var(--ink);font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;letter-spacing:-.3px}
+.stat.big .stat-v{font-size:24px}
+.stat-v .sub{white-space:nowrap}
+.eq-spark{margin-top:8px;line-height:0}
+.spark{width:100%;height:38px;display:block;opacity:.95}
+.fg-wrap{display:flex;flex-direction:column;align-items:center;margin-top:4px}
+.gauge{display:block;margin:0 auto}
+.fg-label{font-size:11px;font-weight:700;letter-spacing:.4px;margin-top:-4px}
+.sub{font-size:12px;color:var(--muted);font-weight:500}
+.summary{margin-top:13px;color:#c2cde0;font-size:13.5px;line-height:1.72;border-left:2px solid;border-image:linear-gradient(180deg,#38bdf8,#a855f7) 1;padding-left:13px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;color:var(--muted);font-size:10px;letter-spacing:1.2px;padding:8px;border-bottom:1px solid var(--line);font-weight:600}
+.tbl td{padding:11px 8px;border-bottom:1px solid rgba(148,163,184,.08);vertical-align:top}
+.tbl tbody tr:hover{background:rgba(148,163,184,.04)}
+.tbl td.r,.tbl th.r{text-align:right}.tbl td.c,.tbl th.c{text-align:center}
+.coin b{font-size:14px;color:#fff}.coin .okx{display:block;color:var(--dim);font-size:10.5px;letter-spacing:.4px;margin-top:2px}
+.usdsub{display:block;color:var(--dim);font-size:10.5px;font-family:'IBM Plex Mono',ui-monospace,monospace;margin-top:2px}
+.heat{border:1px solid;border-radius:8px;padding:2px 7px;font-size:11px;font-family:ui-monospace,monospace;white-space:nowrap}
+.dir{border:1px solid;border-radius:6px;padding:1px 6px;font-size:10px;font-weight:800;letter-spacing:.5px;white-space:nowrap;margin-left:2px}
+.fund{font-size:10.5px;color:var(--muted);letter-spacing:.4px}
+.act{font-weight:800;letter-spacing:.5px}
+.detail{color:var(--muted);font-size:12px;max-width:300px}
+.empty{color:#c2cde0;font-size:13.5px;line-height:1.7}
+.feed-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(148,163,184,.08);font-size:13px;flex-wrap:wrap}
+.feed-row:last-child{border-bottom:none}
+.feed-row b{color:#fff}
+.tag{border:1px solid;border-radius:7px;padding:2px 9px;font-size:11px;font-weight:800;letter-spacing:1px}
+.mv{color:#c2cde0;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px}
+.reason{color:var(--muted);font-size:12.5px;line-height:1.6}
+.foot{margin-top:28px;color:var(--dim);font-size:11.5px;text-align:center;line-height:1.9}
+a{color:#38bdf8}
+@media(max-width:640px){
+  .wrap{padding:18px 12px 50px}
+  .stats{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+  .sub-stats{grid-template-columns:repeat(auto-fit,minmax(112px,1fr))}
+  .stat.big .stat-v{font-size:21px}
+  .scan-right{margin-left:0;flex-basis:100%}
+  .card{padding:13px 14px;overflow-x:auto}
+  .tbl{font-size:11px;min-width:520px}
+  .reason{max-width:100%;font-size:11.5px}
+  .detail{max-width:100%;font-size:11px}
+  .title{font-size:24px}
+}
+</style></head>
+<body><div class="wrap">
+  <div class="title-row">
+    <svg class="brandmark" width="42" height="42" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2b4079"/><stop offset="1" stop-color="#0e1a35"/></linearGradient></defs><rect width="28" height="28" rx="7" fill="url(#cg)"/><path d="M14 5.4 Q14 14 22.6 14 Q14 14 14 22.6 Q14 14 5.4 14 Q14 14 14 5.4 Z" fill="#fff"/></svg>
+    <h1 class="title">Jarvis Crypto</h1>
+    <span class="title-dot">·</span>
+    <span class="title-sub">Autonomous Crypto Portfolio · Adamdegoat</span>
+  </div>
+  <div class="tagline">Self-improving · <b style="color:#16a34a">long</b> &amp; <b style="color:#7c3aed">short</b> · 6 scans daily · paper portfolio · <b>Europe Afternoon / US Pre</b> · 2026-05-30 20:00 SGT</div>
+  
+    <div class="scanbar glass" data-build="1780146533" data-next="2026-05-31T00:00:00+08:00">
+      <div class="scan-left">
+        <span class="dot"></span>
+        <span class="live">LIVE</span>
+        <span class="sep">/</span>
+        <span class="scan-last">Last scan <b>2026-05-30 20:00 SGT</b></span>
+        <span class="ago" id="ago"></span>
+      </div>
+      <div class="scan-right">
+        <span class="next">Next scan <b>2026-05-31 00:00 SGT</b> <span id="countdown" class="cd"></span></span>
+      </div>
+      <div class="scan-slots">SCAN CYCLE (SGT) · 00:00 · 04:00 · 08:20 · 12:00 · 16:00 · 20:00 · 24/7</div>
+      <div class="clocks" id="clocks"></div>
+    </div><div class="grid stats"><div class="stat big"><div class="stat-l">EQUITY</div><div class="stat-v" style="color:#e8eef7">$10,000.00<div class="eq-spark"><svg class="spark" viewBox="0 0 150 40" width="150" height="40" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="sgeq" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22c55e" stop-opacity="0.28"/><stop offset="1" stop-color="#22c55e" stop-opacity="0"/></linearGradient></defs><polygon points="4.0,40 4.0,20.0 11.5,20.0 18.9,20.0 26.4,20.0 33.9,20.0 41.4,20.0 48.8,20.0 56.3,20.0 63.8,20.0 71.3,20.0 78.7,20.0 86.2,20.0 93.7,20.0 101.2,20.0 108.6,20.0 116.1,20.0 123.6,20.0 131.1,20.0 138.5,20.0 146.0,20.0 146.0,40" fill="url(#sgeq)"/><polyline points="4.0,20.0 11.5,20.0 18.9,20.0 26.4,20.0 33.9,20.0 41.4,20.0 48.8,20.0 56.3,20.0 63.8,20.0 71.3,20.0 78.7,20.0 86.2,20.0 93.7,20.0 101.2,20.0 108.6,20.0 116.1,20.0 123.6,20.0 131.1,20.0 138.5,20.0 146.0,20.0" fill="none" stroke="#22c55e" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="146.0" cy="20.0" r="2.4" fill="#22c55e"/></svg></div></div></div><div class="stat big"><div class="stat-l">TOTAL RETURN</div><div class="stat-v" style="color:#e8eef7">0.00% <span class="sub">$0.00</span></div></div><div class="stat"><div class="stat-l">REALIZED P&amp;L</div><div class="stat-v" style="color:#8a99b5">$0.00</div></div><div class="stat"><div class="stat-l">UNREALIZED P&amp;L</div><div class="stat-v" style="color:#8a99b5">$0.00</div></div><div class="stat"><div class="stat-l">USDT CASH</div><div class="stat-v" style="color:#38bdf8">$10,000.00 <span class="sub">100%</span></div></div><div class="stat"><div class="stat-l">NET / GROSS EXP</div><div class="stat-v" style="color:#a855f7">0% <span class="sub">L0/S0</span> <span class="sub">· 0% gr</span></div></div></div><div class="card glass"><div class="card-h">◇ MARKET CONTEXT <span class="chip" style="border-color:#f43f5e55;color:#f43f5e;box-shadow:0 0 18px #f43f5e33">◆ BTC BEAR</span><span class="card-h-spacer"></span><span class="rbar"><span class="rseg on" style="background:#f43f5e;color:#06080f;box-shadow:0 0 14px #f43f5e88">BEAR</span><span class="rseg" style="">CHOP</span><span class="rseg" style="">BULL</span></span></div><div class="grid stats sub-stats"><div class="stat fg-stat"><div class="stat-l">FEAR & GREED</div><div class="fg-wrap"><svg class="gauge" viewBox="0 0 100 58" width="118" aria-hidden="true"><path d="M 8 50 A 42 42 0 0 1 92 50" fill="none" stroke="#1e293b" stroke-width="9" stroke-linecap="round"/><path d="M 8 50 A 42 42 0 0 1 92 50" fill="none" stroke="#f43f5e" stroke-width="9" stroke-linecap="round" pathLength="100" stroke-dasharray="23.0 100" style="filter:drop-shadow(0 0 5px #f43f5eaa)"/><text x="50" y="46" text-anchor="middle" style="font:700 20px IBM Plex Mono,monospace;fill:#f43f5e">23</text></svg><div class="fg-label" style="color:#f43f5e">Extreme Fear</div></div></div><div class="stat"><div class="stat-l">BTC PRICE</div><div class="stat-v" style="color:#e8eef7">$73,610</div></div><div class="stat"><div class="stat-l">BTC DOMINANCE</div><div class="stat-v" style="color:#e8eef7">57.4%</div></div><div class="stat"><div class="stat-l">ETH / BTC</div><div class="stat-v" style="color:#e8eef7">0.02741</div></div><div class="stat"><div class="stat-l">TOTAL MCAP</div><div class="stat-v" style="color:#e8eef7">$2,564B</div></div></div><div class="summary">BTC BEAR regime unchanged, 6th consecutive day. Price $73,610 — 4H micro-bounce (+4 green bars) on 0.00x weekend volume, no conviction. F&amp;G 23 Extreme Fear. ETF outflow streak $2.8B over 9 days ($223M on May 28, BlackRock -$528M single day). Iran MoU signed by negotiators May 28 but Trump signature STILL PENDING — binary risk-on catalyst. PPI 6% YoY (vs 3.8% est): inflation re-acceleration, June rate cut odds 38%. ETH/BTC 0.02741 (ETH widening underperformance vs BTC). Key resistance: BTC 4H Supertrend $75,614 then EMA20/50 $76,300-76,400. Key support: $72,500 (tested), $70,500 (Apr 12 swing low).</div></div><div class="card glass"><div class="card-h">◇ HOLDINGS</div><div class="empty">100% USDT cash — awaiting an A/A+ setup that clears the BTC-regime gate. In crypto, sitting out a weak tape <b>is</b> the trade.</div></div><div class="card glass"><div class="card-h">◇ ACTIVITY (this scan)</div><div class="empty">No trades this scan — positions held. The dashboard still refreshed.</div></div><div class="card glass"><div class="card-h">◇ SETUP RADAR <span class="sub">(watching to LONG strength / SHORT weakness — not yet taken)</span></div><div class="feed-row"><span class="tag" style="color:#22c55e;border-color:#22c55e55">LONG</span><b>TRX</b><span class="reason">FLUSHED_NEG funding -0.0234%, L/S 0.863 NET SHORT crowd, OI -7.3%, 4H RSI 32.5 (oversold), 1D EMA stack BULLISH (above EMA50+EMA200). Trigger: 4H candle CLOSE above $0.350 (4H Supertrend). Entry ~$0.352, invalidation $0.334 (-5.1%), target $0.368 (+4.5%), R:R 2.2. Currently $0.3445 — below 4H Supertrend. Await confirmed reclaim candle.</span></div><div class="feed-row"><span class="tag" style="color:#a855f7;border-color:#a855f755">SHORT</span><b>ETH</b><span class="reason">1D FULL BEAR, RS 14th pct LAGGING, L/S 2.855 crowded long, OI falling. Trigger: rejection at 4H Supertrend $2,080 (lower-high candle close). Entry $2,070-2,080, invalidation $2,130, target $1,967, R:R ~2.5. Currently $2,017 — $48-63 below short zone. Only activates if BTC bounces toward $75-76K.</span></div><div class="feed-row"><span class="tag" style="color:#22c55e;border-color:#22c55e55">LONG</span><b>NEAR</b><span class="reason">1D FULL BULL, RS 92nd pct LEADING, Supertrend BULLISH $2.05. Bounced to $2.42 — missed primary entry zone $2.20-2.30. R:R at current price = 0.82 (FAILS gate). Trigger: second pullback to $2.20-2.30 + 4H stabilisation. Entry $2.25, invalidation $2.04, target $2.73, R:R ~2.3. June Resharding upgrade catalyst.</span></div><div class="feed-row"><span class="tag" style="color:#f59e0b;border-color:#f59e0b55">WATCH</span><b>HBAR</b><span class="reason">RS 98th pct LEADING. DISQUALIFIED from shorting: 4H Supertrend BULLISH + FULL BULL 4H EMA = confirmed uptrend. Shadow short scored LOSS by learning loop — validates rule. OI rising +31.54% (shorts building). Short only if 4H Supertrend flips BEARISH. No long setup either (extended, Bear regime).</span></div><div class="feed-row"><span class="tag" style="color:#a855f7;border-color:#a855f755">SHORT</span><b>SOL</b><span class="reason">DISARMED. L/S 3.537 EXTREME crowded long = violent squeeze risk. Trigger (4H Supertrend rejection $84.93) NOT fired ($82.31, $2.6 below). Re-arm only when L/S below 2.5. OI falling -2.14%.</span></div></div><div class="card glass"><div class="card-h">◇ SELF-IMPROVING BRAIN <span class="chip" style="border-color:#38bdf855;color:#38bdf8">brain v1</span><span class="sub" style="margin-left:auto">recalibrated 2026-05-30</span></div><div class="grid stats sub-stats"><div class="stat"><div class="stat-l">GRADED OUTCOMES</div><div class="stat-v" style="color:#38bdf8">338</div></div><div class="stat"><div class="stat-l">FACTORS CALIBRATED</div><div class="stat-v" style="color:#e8eef7">6</div></div><div class="stat"><div class="stat-l">SETUPS TRACKED</div><div class="stat-v" style="color:#e8eef7">12</div></div><div class="stat"><div class="stat-l">LESSONS LOGGED</div><div class="stat-v" style="color:#a855f7">12</div></div><div class="stat"><div class="stat-l">DECIDED (LIVE)</div><div class="stat-v" style="color:#8a99b5">0</div></div></div><div class="summary">This desk doesn't just trade — it <b>grades itself</b>. Every call is scored against its target and invalidation, attributed to the factors behind it, and the scoring weights are <b>auto-recalibrated every run</b> — <b>segmented by BTC regime</b>, because what works in a bull doesn't in a bear. The shadow book below adds dozens of graded lessons even on weeks it correctly sits in cash.</div><div style="margin-top:12px;font-size:10px;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:7px">Top learned signals — auto-calibrated weights</div><span class="mono" style="display:inline-block;border:1px solid #22c55e55;color:#22c55e;border-radius:7px;padding:2px 9px;font-size:11px;margin:0 6px 6px 0">cold_start_min_calls 10.00×</span><span class="mono" style="display:inline-block;border:1px solid #8a99b555;color:#8a99b5;border-radius:7px;padding:2px 9px;font-size:11px;margin:0 6px 6px 0">coin_vs_btc_rs 1.03×</span><span class="mono" style="display:inline-block;border:1px solid #8a99b555;color:#8a99b5;border-radius:7px;padding:2px 9px;font-size:11px;margin:0 6px 6px 0">btc_regime_alignment 1.00×</span><span class="mono" style="display:inline-block;border:1px solid #8a99b555;color:#8a99b5;border-radius:7px;padding:2px 9px;font-size:11px;margin:0 6px 6px 0">funding_oi_positioning 1.00×</span><span class="mono" style="display:inline-block;border:1px solid #8a99b555;color:#8a99b5;border-radius:7px;padding:2px 9px;font-size:11px;margin:0 6px 6px 0">liquidation_signal 1.00×</span><div style="margin-top:14px;font-size:10px;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:4px">Recent lessons it wrote itself</div><div class="feed-row"><span class="tag" style="color:#a855f7;border-color:#a855f755">2026-05-30</span><span class="reason">Shallow pullbacks in a strong uptrend leader are BULLISH information, not failed setups. NEAR pulled back -8.2% to $2.36 (within $0.06 of the $2.20-2.30 entry zone) then reversed to $2.40 without reaching the zone. This means: (1) the pullback was bought aggressively — strong hands defending $2.36; (2) the ideal entry zone may not reactivate on this leg. The correct response is NOT to chase at $2.40 (R:R 1.86, fails gate). The correct response is to watch for either: (a) a new pullback flush through $2.35 to reopen the zone, OR (b) a breakout above $2.57 on volume that resets the entry thesis at higher prices ($2.55-2.60 entry, ~$2.40 invalidation, target $3.00+ = R:R ~2.5x).</span></div><div class="feed-row"><span class="tag" style="color:#a855f7;border-color:#a855f755">2026-05-30</span><span class="reason">Blow-off tops need TIME to reverse — never chase the first red candle as a short setup. HBAR heat went from +3/+3 (12:00 SGT) to -1/0 (16:00 SGT) in 4H. The 3.67x volume red bar IS notable capitulation anatomy, but the 4H Supertrend remains BULLISH at $0.09 — the structure has not confirmed a reversal. Shorting a confirmed 4H uptrend after ONE red bar is not a setup, it&#x27;s a gamble. The correct process: monitor for 4H Supertrend to flip BEARISH (will happen at ~$0.09 break), then wait for a lower-high rejection with bearish funding as the actual entry. Don&#x27;t pre-empt the signal.</span></div><div class="feed-row"><span class="tag" style="color:#a855f7;border-color:#a855f755">2026-05-30</span><span class="reason">FLUSHED_NEG funding is a continuous signal that intensifies over time. TRX funding went from -0.0216% (12:00 SGT) to -0.0479% (16:00 SGT) in one 4H period — shorts are now paying 52% APR to hold their position. This is unsustainable: every 8-hour funding cycle where TRX shorts pay, the squeeze pressure compounds. The mandatory reclaim candle requirement remains non-negotiable, but the urgency to catch the trigger as soon as it fires is elevated. At -0.0479%, the trade&#x27;s edge increases with each passing settlement that doesn&#x27;t produce the reclaim — the setup STRENGTHENS in the queue.</span></div></div><div class="card glass"><div class="card-h">◇ SHADOW BOOK <span class="sub">(paper hypotheses — no real money)</span></div><div class="grid stats sub-stats"><div class="stat"><div class="stat-l">NOW TESTING</div><div class="stat-v" style="color:#38bdf8">2</div></div><div class="stat"><div class="stat-l">SCORED</div><div class="stat-v" style="color:#e8eef7">2</div></div><div class="stat"><div class="stat-l">WOULD-WIN RATE</div><div class="stat-v" style="color:#f43f5e">0%</div></div><div class="stat"><div class="stat-l">TOTAL LOGGED</div><div class="stat-v" style="color:#e8eef7">4</div></div></div><div class="summary">The system doesn't only learn from money it actually risks. Every scan it also writes down its single best <b style='color:#16a34a'>long</b> and best <b style='color:#7c3aed'>short</b> idea across the whole market as a <b>shadow trade</b> — a paper hypothesis with a fixed entry, target and invalidation, but <b>zero real money behind it</b>. Days later it checks whether each idea would have hit its target (win) or its invalidation (loss). That turns a quiet, cash-heavy week into dozens of graded lessons, so the brain keeps sharpening even when it's correctly sitting on its hands. These results feed the same scoring weights that rank live trades — they never touch the $10,000 equity above.</div><div style="margin-top:12px;font-size:10px;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase;margin-bottom:4px">Hypotheses being tested now</div><div class="feed-row"><span class="tag" style="color:#22c55e;border-color:#22c55e55">LONG</span><b>ZEC</b><span class="mv">517.9500 → 690.0000</span><span class="reason">btc_trend_pullback_long · rr 2.1 · bear</span></div><div class="feed-row"><span class="tag" style="color:#22c55e;border-color:#22c55e55">LONG</span><b>TRX</b><span class="mv">0.3433 → 0.3664</span><span class="reason">funding_reset_long · rr 2.2 · bear</span></div></div>
+  <div class="summary" style="margin-top:14px">Inception May 29. Equity $10,000.00 (+$0 / +0.00%). 100% USDT cash through 9 scans across 2 days. No A/A+ setup (score ≥ 4.0) has cleared the R:R 2.0 gate in this Bear regime. Preserving capital is correct in a confirmed Bear tape with $2.8B ETF outflow streak, no reversal signal, and extreme crowd-long positioning in ETH/SOL. Waiting for either: (a) confirmed reversal candle + BTC reclaim above $75,500 [Iran catalyst], or (b) short entry at resistance rejection [ETH/SOL/TRX] with confirmed lower-high.</div>
+  <div class="foot">Jarvis Crypto is an autonomous paper portfolio for research/education — not financial advice.<br>
+  Data: Binance · CoinGecko · alternative.me · OKX (execution venue). 24/7 · 6 scans daily (SGT 00/04/08/12/16/20).</div>
+</div>
+<script>
+(function(){
+ function fmtAgo(s){if(s<60)return s+'s ago';var m=Math.floor(s/60);if(m<60)return m+'m ago';var h=Math.floor(m/60);return h+'h '+(m%60)+'m ago';}
+ var bar=document.querySelector('.scanbar');
+ var build=bar?parseInt(bar.dataset.build||'0',10):0;
+ var nextIso=bar?bar.dataset.next:'';
+ var nextT=nextIso?Date.parse(nextIso):0;
+ function tick(){
+   var now=Date.now()/1000;
+   var ago=document.getElementById('ago');
+   if(ago&&build){ago.textContent='· updated '+fmtAgo(Math.max(0,Math.floor(now-build)));}
+   var cd=document.getElementById('countdown');
+   if(cd&&nextT){var d=Math.floor((nextT-Date.now())/1000);if(d>0){var h=Math.floor(d/3600),m=Math.floor((d%3600)/60);cd.textContent='(in '+(h>0?h+'h ':'')+m+'m)';}else{cd.textContent='(due)';}}
+   var c=document.getElementById('clocks');
+   if(c){
+     function z(n){return (n<10?'0':'')+n;}
+     function clk(tz,label){try{var t=new Date().toLocaleTimeString('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit'});return label+' '+t;}catch(e){return '';}}
+     c.innerHTML='<span>◷ SGT '+clk('Asia/Singapore','').trim()+'</span><span>◷ UTC '+clk('UTC','').trim()+'</span><span>◷ NY '+clk('America/New_York','').trim()+'</span>';
+   }
+ }
+ tick();setInterval(tick,1000);
+})();
+</script>
+</body></html>
